@@ -20,10 +20,23 @@ const io = new Server(httpServer, {
 });
 
 io.on('connection', (socket) => {
-    console.log('사용자가 연결되었습니다', socket.id);
+    socket.broadcast.emit('SEND_MESSAGE', JSON.stringify({
+        id: socket.id + Math.random(),
+        content: '새로운 사용자가 입장했습니다',
+        sender: socket.id,
+        timestamp: new Date().toLocaleTimeString(),
+    }));
 
-    socket.on('SEND_MESSAGE', (msg) => {
-        console.log(msg);
+    socket.on('SEND_MESSAGE', ({ room, message }) => {
+        console.log('SEND_MESSAGE', room, message);
+    });
+
+    socket.on('JOIN_ROOM', (room) => {
+        console.log('JOIN_ROOM', room);
+    })
+
+    socket.on('LEAVE_ROOM', (room) => {
+        console.log('LEAVE_ROOM', room);
     });
 
     socket.on('disconnect', () => {
